@@ -1,14 +1,16 @@
+require('dotenv').config()
 const cors = require("cors")
 const express = require("express");
 const mongoose = require('mongoose')
 const http = require('http');
 const socketIo = require('socket.io');
-const Router = require('./routers/chatRoute')
+const chatRouter = require('./routers/chatRoute')
+const patientRoute = require('./routers/patientRoute')
 
-const PORT = 2929;
 const app = express();
+
 const server = http.Server(app);
-const db = "mongodb+srv://health360:AxEtewp9sxmINHyz@health360.t5w9feg.mongodb.net/?retryWrites=true&w=majority";
+const db = process.env.DATABASE
 app.use(cors())
 app.use(express.json());
 
@@ -16,7 +18,8 @@ app.get('/', (req, res)=>{
     res.status(200).send("My Api is connected successfully")
 })
 
-app.use('/api', Router)
+app.use('/api', chatRouter);
+app.use('/api', patientRoute)
 
 mongoose.set('strictQuery', true)
 mongoose.connect(db, {
@@ -25,7 +28,7 @@ mongoose.connect(db, {
 }).then(()=>{
     console.log("MongooseDB connected")
 }).then(()=>{
-  app.listen(PORT, ()=>{
+  app.listen(process.env.PORT, ()=>{
     console.log("Server is listening to PORT: 2929")
 })
 })
@@ -49,8 +52,8 @@ io.on('connection', (socket) => {
   });
 });
 
-// Start the server
-const port = process.env.PORT || 3000;
-server.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
-});
+// // Start the server
+// const port = process.env.PORT || 3000;
+// server.listen(port, () => {
+//   console.log(`Server is listening on port ${port}`);
+// });

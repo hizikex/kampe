@@ -33,6 +33,10 @@ const patientSchema = new Schema({
       token: {
         type: String
       },
+      verify: {
+        type: String,
+        default: false
+      },
       appointment: [{
         type: Schema.Types.ObjectId,
         ref: 'appointments'
@@ -49,12 +53,14 @@ const patientSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'messages'
       }],
+},{
+  timestamps: true
 });
 
 const patients = mongoose.model('patients', patientSchema);
 
 const doctorSchema = new Schema({
-    patientName: {
+    doctorName: {
       type: String,
       required: [true, "Name is required"]
     },
@@ -82,6 +88,13 @@ const doctorSchema = new Schema({
     specialties: [{
         type: String
     }],
+    token: {
+      type: String
+    },
+    verify: {
+      type: Boolean,
+      default: false
+    },
     sentMessages: [{
         type: Schema.Types.ObjectId,
         ref: 'messages'
@@ -90,6 +103,13 @@ const doctorSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'messages'
       }],
+      appointment: [{
+        type: Schema.Types.ObjectId,
+        ref: "appointments"
+      }]
+},
+{
+  timestamps: true
 });
 const doctors = mongoose.model('doctors', doctorSchema);
 
@@ -120,18 +140,27 @@ const messages = mongoose.model('messages', messageSchema);
 const appointmentSchema = new Schema({
   appointmentDate:  {
     type:String,
-},
-appointmentTime:  {
-    type:String,
-},
-appointmentStatus: {
-    type: Boolean,
-    default:false
-},
-symptoms: {
-    type: String
-}
-}, {
+    },
+  appointmentTime:  {
+     type:String,
+    },
+  appointmentStatus: {
+     type: Boolean,
+     default:false
+    },
+  symptoms: {
+     type: String
+    },
+  bookAppointment: {
+    type: Schema.Types.ObjectId,
+    ref: "patients"
+    },
+    viewAppointmet: {
+      type: Schema.Types.ObjectId,
+      ref: "doctors"
+    }
+  }
+, {
   timestamps: true
 });
 
