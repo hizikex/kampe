@@ -70,6 +70,32 @@ exports.patientLogIn = async (req, res) => {
         const {email} = req.body;
         const checkEmail = await Patient.findOne({email})
         console.log(checkEmail)
+        if (!checkEmail) return
+            res.status(404).json({
+                message: "No patient registered with this email"
+            })
+        const isPassword = await bcrypt.compare(req.body.password, checkEmail.password);
+        if (!isPassword) returnres.status(404).json({
+            message: "Email or password incorrect"
+        })
+
+        const logInToken = jwt.sign({
+            id: checkEmail._id,
+            email: checkEmail.email,
+            password: checkEmail.password
+        }, process.env.TOKEN, {
+            expiresIn: "1d"
+        })
+
+        checkEmail.token = logInToken
+        await checkEmail.save()
+
+        const {password, ...others} = checkEmail._doc;
+
+        res.status(201).json({
+            message: "Log In Successful",
+            data: others
+        })
     } catch (error) {
         res.status(404).json({
             message: error.message
